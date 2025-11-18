@@ -46,7 +46,7 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenSingleItemScanned_ReturnsUnitPrice()
     {
-        var rules = new[] { new PricingRule("C", UnitPrice: 20) };
+        var rules = new PricingRule[] { new("C", UnitPrice: 20) };
         ICheckout checkout = _createCheckout(rules);
 
         checkout.Scan("C");
@@ -58,7 +58,7 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenThreeItemsWithSpecialOffer_ReturnsSpecialPrice()
     {
-        var rules = new[] { new PricingRule("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130) };
+        var rules = new PricingRule[] { new("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130) };
         ICheckout checkout = _createCheckout(rules);
 
         checkout.Scan("A");
@@ -72,12 +72,12 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenItemsScannedInAnyOrder_CalculatesCorrectly()
     {
-        var rules = new[]
+        var rules = new PricingRule[]
         {
-            new PricingRule("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130),
-            new PricingRule("B", UnitPrice: 30, SpecialQuantity: 2, SpecialPrice: 45),
-            new PricingRule("C", UnitPrice: 20),
-            new PricingRule("D", UnitPrice: 15)
+            new("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130),
+            new("B", UnitPrice: 30, SpecialQuantity: 2, SpecialPrice: 45),
+            new("C", UnitPrice: 20),
+            new("D", UnitPrice: 15)
         };
         ICheckout checkout = _createCheckout(rules);
 
@@ -92,17 +92,57 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenUnknownItemScanned_ThrowsArgumentException()
     {
-        var rules = new[]
+        var rules = new PricingRule[]
         {
-            new PricingRule("A", UnitPrice: 50)
+            new("A", UnitPrice: 50)
         };
+
         ICheckout checkout = _createCheckout(rules);
 
         checkout.Scan("Z");
-        var act = () => checkout.GetTotalPrice();
+        var act = checkout.GetTotalPrice;
 
         act.Should().Throw<ArgumentException>()
             .WithMessage("*Unknown SKU*Z*");
+    }
+
+    [Fact]
+    public void Scan_WhenSkuIsNull_ThrowsInvalidSkuException()
+    {
+        var rules = Array.Empty<PricingRule>();
+        ICheckout checkout = _createCheckout(rules);
+        var emptySku = string.Empty;
+
+        var act = () => checkout.Scan(emptySku);
+
+        act.Should().Throw<InvalidSkuException>()
+            .WithMessage("*SKU cannot be null or empty*");
+    }
+
+    [Fact]
+    public void Scan_WhenSkuIsEmpty_ThrowsInvalidSkuException()
+    {
+        var rules = Array.Empty<PricingRule>();
+        ICheckout checkout = _createCheckout(rules);
+
+        var nullSku = (string?)null;
+
+        var act = () => checkout.Scan(nullSku!);
+
+        act.Should().Throw<InvalidSkuException>()
+            .WithMessage("*SKU cannot be null or empty*");
+    }
+
+    [Fact]
+    public void Scan_WhenSkuIsWhitespace_ThrowsInvalidSkuException()
+    {
+        var rules = Array.Empty<PricingRule>();
+        ICheckout checkout = _createCheckout(rules);
+
+        var act = () => checkout.Scan("   ");
+
+        act.Should().Throw<InvalidSkuException>()
+            .WithMessage("*SKU cannot be null or empty*");
     }
 
 }
