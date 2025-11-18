@@ -13,5 +13,14 @@ public class Checkout(IEnumerable<PricingRule> pricingRules) : ICheckout
         _scannedItems[item] = _scannedItems.GetValueOrDefault(item) + 1;
     }
 
-    public int GetTotalPrice() => _scannedItems.Sum(item => _rulesBySku[item.Key].CalculatePrice(item.Value));
+    public int GetTotalPrice()
+    {
+        return _scannedItems.Sum(item =>
+        {
+            if (!_rulesBySku.TryGetValue(item.Key, out var rule))
+                throw new ArgumentException($"Unknown SKU: {item.Key}", nameof(item));
+
+            return rule.CalculatePrice(item.Value);
+        });
+    }
 }
