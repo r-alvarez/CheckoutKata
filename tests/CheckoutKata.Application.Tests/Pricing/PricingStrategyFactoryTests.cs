@@ -1,4 +1,5 @@
-﻿using CheckoutKata.Application.Pricing.Strategies;
+﻿using CheckoutKata.Application.Pricing.Models;
+using CheckoutKata.Application.Pricing.Strategies;
 using FluentAssertions;
 
 namespace CheckoutKata.Application.Tests.Pricing;
