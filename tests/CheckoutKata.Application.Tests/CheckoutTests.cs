@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using CheckoutKata.Application.Contracts;
+using CheckoutKata.Application.Models;
+using CheckoutKata.Application.Services;
+using FluentAssertions;
 
 namespace CheckoutKata.Application.Tests;
 
@@ -26,8 +29,5 @@ public class CheckoutTests
         total.Should().Be(0);
     }
 
-    private static ICheckout CreateCheckout(IEnumerable<PricingRule> pricingRules)
-    {
-        return new Checkout(pricingRules);
-    }
+    private static ICheckout CreateCheckout(IEnumerable<PricingRule> pricingRules) => new Checkout(pricingRules);
 }
