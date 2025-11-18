@@ -10,10 +10,14 @@ namespace CheckoutKata.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCheckoutServices(this IServiceCollection services, IEnumerable<PricingRule> pricingRules)
+    public static IServiceCollection AddCheckoutServices(this IServiceCollection services, IEnumerable<PricingRule> pricingRules, PricingStrategyType strategyType = PricingStrategyType.MultiBuy)
     {
-        // Singleton - Stateless, thread-safe calculation
-        services.AddSingleton<IPricingStrategy, MultiBuyPricingStrategy>();
+        // Singleton - Factory for creating strategies
+        services.AddSingleton<IPricingStrategyFactory, PricingStrategyFactory>();
+
+        // Singleton - Get strategy from factory based on type
+        services.AddSingleton(sp =>
+            sp.GetRequiredService<IPricingStrategyFactory>().GetStrategy(strategyType));
 
         // Singleton - Stateless service, depends on singleton strategy
         services.AddSingleton<IPricingService, PricingService>();

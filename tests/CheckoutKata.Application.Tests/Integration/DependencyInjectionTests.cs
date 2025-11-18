@@ -1,6 +1,8 @@
 ﻿using CheckoutKata.Application.Checkout.Contracts;
 using CheckoutKata.Application.Extensions;
+using CheckoutKata.Application.Pricing.Contracts;
 using CheckoutKata.Application.Pricing.Models;
+using CheckoutKata.Application.Pricing.Strategies;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -83,5 +85,100 @@ public class DependencyInjectionTests
 
         // Assert
         total.Should().Be(175);
+    }
+
+    [Fact]
+    public void AddCheckoutServices_WithDifferentStrategy_UsesThatStrategy()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var rules = new[] { new PricingRule("A", 50, specialQuantity: 2, specialPrice: 1) };
+        services.AddCheckoutServices(rules, PricingStrategyType.BuyOneGetOneFree);
+        var provider = services.BuildServiceProvider();
+        var checkout = provider.GetRequiredService<ICheckout>();
+
+        // Act
+        checkout.Scan("A");
+        checkout.Scan("A");
+        var total = checkout.GetTotalPrice();
+
+        // Assert
+        total.Should().Be(50, because: "BOGOF strategy: buy 2, pay for 1");
+    }
+
+    [Fact]
+    public void AddCheckoutServices_WithBuyOneGetOneFreeStrategy_CalculatesCorrectly()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var rules = new[] { new PricingRule("A", 50, specialQuantity: 2, specialPrice: 1) };
+        services.AddCheckoutServices(rules, PricingStrategyType.BuyOneGetOneFree);
+        var provider = services.BuildServiceProvider();
+        var checkout = provider.GetRequiredService<ICheckout>();
+
+        // Act
+        checkout.Scan("A");
+        checkout.Scan("A");
+        var total = checkout.GetTotalPrice();
+
+        // Assert
+        total.Should().Be(50, because: "BOGOF: 2 items, pay for 1");
+    }
+
+    [Fact]
+    public void AddCheckoutServices_WithPercentageDiscount_AppliesCorrectly()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var rules = new[] { new PricingRule("A", 50, 3, 20) };
+        services.AddCheckoutServices(rules, PricingStrategyType.PercentageDiscount);
+        var provider = services.BuildServiceProvider();
+        var checkout = provider.GetRequiredService<ICheckout>();
+
+        // Act
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        var total = checkout.GetTotalPrice();
+
+        // Assert
+        total.Should().Be(120, because: "3 × 50 = 150, 20% off = 120");
+    }
+
+    [Fact]
+    public void AddCheckoutServices_WithMultiBuyStrategy_WorksAsDefault()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var rules = new[] { new PricingRule("A", 50, 3, 130) };
+        services.AddCheckoutServices(rules);
+        var provider = services.BuildServiceProvider();
+        var checkout = provider.GetRequiredService<ICheckout>();
+
+        // Act
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        var total = checkout.GetTotalPrice();
+
+        // Assert
+        total.Should().Be(130, because: "default MultiBuy strategy: 3 for 130");
+    }
+
+    [Fact]
+    public void AddCheckoutServices_RegistersFactory_CanResolveFactory()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var rules = new[] { new PricingRule("A", 50) };
+        services.AddCheckoutServices(rules);
+        var provider = services.BuildServiceProvider();
+
+        // Act
+        var factory = provider.GetService<IPricingStrategyFactory>();
+
+        // Assert
+        factory.Should().NotBeNull();
+        factory.Should().BeOfType<PricingStrategyFactory>();
     }
 }
