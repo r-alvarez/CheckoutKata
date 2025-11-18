@@ -1,4 +1,5 @@
-﻿using CheckoutKata.Application.Pricing.Contracts;
+﻿using CheckoutKata.Application.Exceptions;
+using CheckoutKata.Application.Pricing.Contracts;
 using CheckoutKata.Application.Pricing.Models;
 
 namespace CheckoutKata.Application.Pricing;
@@ -12,7 +13,7 @@ public class PricingService(IPricingStrategy pricingStrategy) : IPricingService
         return scannedItems.Sum(item =>
         {
             if (!rulesBySku.TryGetValue(item.Key, out var rule))
-                throw new ArgumentException($"Unknown SKU: {item.Key}");
+                throw new UnknownSkuException(item.Key);
 
             return pricingStrategy.CalculatePrice(
                 item.Value,

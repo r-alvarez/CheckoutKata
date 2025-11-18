@@ -6,7 +6,7 @@ public class MultiBuyPricingStrategy : IPricingStrategy
 {
     public int CalculatePrice(int quantity, int unitPrice, int? specialQuantity = null, int? specialPrice = null)
     {
-        if (specialQuantity.HasValue && specialPrice.HasValue)
+        if (specialQuantity is not null && specialPrice is not null)
         {
             var specialSets = quantity / specialQuantity.Value;
             var remainder = quantity % specialQuantity.Value;
