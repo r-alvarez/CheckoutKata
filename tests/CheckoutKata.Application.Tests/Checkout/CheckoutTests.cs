@@ -1,5 +1,6 @@
 ﻿using CheckoutKata.Application.Checkout;
 using CheckoutKata.Application.Checkout.Contracts;
+using CheckoutKata.Application.Exceptions;
 using CheckoutKata.Application.Pricing;
 using CheckoutKata.Application.Pricing.Contracts;
 using CheckoutKata.Application.Pricing.Models;

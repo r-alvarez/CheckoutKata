@@ -1,4 +1,5 @@
 ﻿using CheckoutKata.Application.Checkout.Contracts;
+using CheckoutKata.Application.Exceptions;
 using CheckoutKata.Application.Pricing.Contracts;
 using CheckoutKata.Application.Pricing.Models;
 
@@ -11,6 +12,9 @@ public class CheckoutService(IEnumerable<PricingRule> pricingRules, IPricingServ
 
     public void Scan(string item)
     {
+        if (string.IsNullOrWhiteSpace(item))
+            throw new InvalidSkuException("SKU cannot be null or empty");
+
         if (!_scannedItems.TryAdd(item, 1))
             _scannedItems[item]++;
     }
