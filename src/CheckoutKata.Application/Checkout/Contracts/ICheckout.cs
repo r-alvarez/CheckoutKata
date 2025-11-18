@@ -1,4 +1,4 @@
-﻿namespace CheckoutKata.Application.Contracts;
+﻿namespace CheckoutKata.Application.Checkout.Contracts;
 
 public interface ICheckout
 {

@@ -1,17 +1,24 @@
-﻿using CheckoutKata.Application.Contracts;
-using CheckoutKata.Application.Models;
-using CheckoutKata.Application.Services;
+﻿using CheckoutKata.Application.Checkout;
+using CheckoutKata.Application.Checkout.Contracts;
+using CheckoutKata.Application.Pricing;
+using CheckoutKata.Application.Pricing.Contracts;
+using CheckoutKata.Application.Pricing.Models;
+using CheckoutKata.Application.Pricing.Strategies;
 using FluentAssertions;
 
-namespace CheckoutKata.Application.Tests;
+namespace CheckoutKata.Application.Tests.Checkout;
 
 public class CheckoutTests
 {
     private readonly Func<IEnumerable<PricingRule>, ICheckout> _createCheckout;
 
+    private readonly IPricingService _pricingService;
+
     public CheckoutTests()
     {
-        _createCheckout = rules => new Checkout(rules);
+        var pricingStrategy = new MultiBuyPricingStrategy();
+        _pricingService = new PricingService(pricingStrategy);
+        _createCheckout = rules => new CheckoutService(rules, _pricingService);
     }
 
     [Fact]
