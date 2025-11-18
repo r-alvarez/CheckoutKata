@@ -47,7 +47,7 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenSingleItemScanned_ReturnsUnitPrice()
     {
-        var rules = new PricingRule[] { new("C", UnitPrice: 20) };
+        var rules = new PricingRule[] { new("C", unitPrice: 20) };
         ICheckout checkout = _createCheckout(rules);
 
         checkout.Scan("C");
@@ -59,7 +59,7 @@ public class CheckoutTests
     [Fact]
     public void GetTotalPrice_WhenThreeItemsWithSpecialOffer_ReturnsSpecialPrice()
     {
-        var rules = new PricingRule[] { new("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130) };
+        var rules = new PricingRule[] { new("A", unitPrice: 50, specialQuantity: 3, specialPrice: 130) };
         ICheckout checkout = _createCheckout(rules);
 
         checkout.Scan("A");
@@ -75,10 +75,10 @@ public class CheckoutTests
     {
         var rules = new PricingRule[]
         {
-            new("A", UnitPrice: 50, SpecialQuantity: 3, SpecialPrice: 130),
-            new("B", UnitPrice: 30, SpecialQuantity: 2, SpecialPrice: 45),
-            new("C", UnitPrice: 20),
-            new("D", UnitPrice: 15)
+            new("A", unitPrice: 50, specialQuantity: 3, specialPrice: 130),
+            new("B", unitPrice: 30, specialQuantity: 2, specialPrice: 45),
+            new("C", unitPrice: 20),
+            new("D", unitPrice: 15)
         };
         ICheckout checkout = _createCheckout(rules);
 
@@ -95,7 +95,7 @@ public class CheckoutTests
     {
         var rules = new PricingRule[]
         {
-            new("A", UnitPrice: 50)
+            new("A", unitPrice: 50)
         };
 
         ICheckout checkout = _createCheckout(rules);
