@@ -29,6 +29,8 @@ public record PricingRule
 
         if (specialQuantity is not null && specialPrice is not null)
         {
+            // Business rule: Special offers must provide actual savings
+            // A "special" price that costs the same or more makes no sense
             var regularPrice = unitPrice * specialQuantity.Value;
             if (specialPrice.Value >= regularPrice)
                 throw new InvalidPricingRuleException(

@@ -1,6 +1,6 @@
 # Checkout Kata - TDD Implementation
 
-A supermarket checkout system built with Test-Driven Development. This was created as part of a technical interview to demonstrate clean code, SOLID principles, and modern C# practices.
+A supermarket checkout system built with Test-Driven Development. This was created as part of a technical interview to demonstrate clean code, SOLID principles, and modern C# practices. Built using .NET 10
 
 **Kata Source:** [Code Kata - Back to the Checkout](https://github.com/brighthr/checkout-kata)
 
